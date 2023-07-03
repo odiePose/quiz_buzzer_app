@@ -7,7 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide Provider;
 
 final supabaseProvider = Provider((ref) {
-  return SupabaseClient(Constants.supabaseUrl, Constants.supabaseAnnonKey);
+  final credentials = Constants.getSupaBaseCredentials();
+  return SupabaseClient(credentials[0], credentials[1]);
 });
 
 final loadingProvider = StateProvider((ref) => false);
