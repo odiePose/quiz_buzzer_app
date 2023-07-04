@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - main
@@ -16,7 +16,9 @@ jobs:
           config --enable-web && flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_QUIZBUZZERAPP_B3386 }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_QUIZBUZZERAPP_B3386 }}"
           channelId: live
           projectId: quizbuzzerapp-b3386
+          SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
+          SUPABASE_ANNON_KEY: "${{ secrets.SUPABASE_ANNON_KEY }}"
