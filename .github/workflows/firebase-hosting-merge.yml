@@ -14,9 +14,9 @@ jobs:
       SUPABASE_ANNON_KEY: ${{ secrets.SUPABASE_ANNON_KEY }}
     steps:
       - uses: actions/checkout@v3
-      - run: >-
-          sudo snap install flutter --classic && flutter channel beta && flutter
-          config --enable-web && flutter build web
+      - run: flutter pub get
+      - run: flutter config --enable-web
+      - run: flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
