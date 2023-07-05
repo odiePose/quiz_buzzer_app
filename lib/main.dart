@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
-  //await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
   final credentials = Constants.getSupaBaseCredentials();
   await Supabase.initialize(url: credentials[0], anonKey: credentials[1]);
