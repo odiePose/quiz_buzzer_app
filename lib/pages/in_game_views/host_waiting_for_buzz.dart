@@ -29,7 +29,11 @@ class WaitingForBuzz extends HookConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(width: MediaQuery.of(context).size.width),
-                        Text(firstBuzzerName + ' has buzzed!'),
+                        Text(
+                          firstBuzzerName + ' has buzzed!',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 25),
+                        ),
                         ElevatedButton(
                             onPressed: () async {
                               ref.read(continue_.notifier).state = 1;
@@ -51,7 +55,8 @@ class WaitingForBuzz extends HookConsumerWidget {
                                 ]
                               }).eq('id', roomId);
                             },
-                            child: const Text('Riktig sang (+1)')),
+                            child: const Text(
+                                'Enten riktig sang eller artist (+1)')),
                         ElevatedButton(
                             onPressed: () async {
                               ref.read(continue_.notifier).state = 1;
@@ -60,27 +65,7 @@ class WaitingForBuzz extends HookConsumerWidget {
                                 player['active'] = true;
                               }
                               await supabase.from('game_state').update({
-                                'state_of_game': 1,
-                                'players': [
-                                  {
-                                    'id': firstBuzzId,
-                                    'name': firstBuzzerName,
-                                    'score': firstBuzzerScore + 1,
-                                  },
-                                  ...gameState['players'].where(
-                                      (player) => player['id'] != firstBuzzId)
-                                ]
-                              }).eq('id', roomId);
-                            },
-                            child: const Text('Riktig artist (+1)')),
-                        ElevatedButton(
-                            onPressed: () async {
-                              ref.read(continue_.notifier).state = 1;
-                              // Resetting the active property of each player for the next round
-                              for (var player in gameState['players']) {
-                                player['active'] = true;
-                              }
-                              await supabase.from('game_state').update({
+                                'first_buzz_id': null,
                                 'state_of_game': 1,
                                 'players': [
                                   {
@@ -97,12 +82,14 @@ class WaitingForBuzz extends HookConsumerWidget {
                         ElevatedButton(
                             onPressed: () async {
                               await supabase.from('game_state').update({
+                                'first_buzz_id': null,
                                 'state_of_game': 1,
                                 'players': [
                                   {
                                     'id': firstBuzzId,
                                     'name': firstBuzzerName,
                                     'active': false,
+                                    'score': firstBuzzerScore,
                                   },
                                   ...gameState['players'].where(
                                       (player) => player['id'] != firstBuzzId)
@@ -140,7 +127,8 @@ class WaitingForBuzz extends HookConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Waiting for a buzz...'),
+                    Text('Waiting for a buzz...',
+                        style: TextStyle(fontSize: 25)),
                   ],
                 ),
               );
