@@ -8,7 +8,7 @@ class Constants {
   static List<String> getSupaBaseCredentials() {
     if (SUPABASE_URL == "" || SUPABASE_API_KEY == "") {
       throw Exception(
-          'Please define SUPABASE_URL and SUPABASE_ANNON_KEY in your .env file');
+          'Please define SUPABASE_URL and SUPABASE_API_KEY in your .env file');
     }
     return [SUPABASE_URL, SUPABASE_API_KEY];
   }
