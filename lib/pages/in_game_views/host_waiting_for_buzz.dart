@@ -34,69 +34,71 @@ class WaitingForBuzz extends HookConsumerWidget {
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 25),
                         ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              ref.read(continue_.notifier).state = 1;
-                              // Resetting the active property of each player for the next round
-                              for (var player in gameState['players']) {
-                                player['active'] = true;
-                              }
-                              await supabase.from('game_state').update({
-                                'first_buzz_id': null,
-                                'state_of_game': 1,
-                                'players': [
-                                  {
-                                    'id': firstBuzzId,
-                                    'name': firstBuzzerName,
-                                    'score': firstBuzzerScore + 1,
-                                  },
-                                  ...gameState['players'].where(
-                                      (player) => player['id'] != firstBuzzId)
-                                ]
-                              }).eq('id', roomId);
-                            },
-                            child: const Text(
-                                'Enten riktig sang eller artist (+1)')),
-                        ElevatedButton(
-                            onPressed: () async {
-                              ref.read(continue_.notifier).state = 1;
-                              // Resetting the active property of each player for the next round
-                              for (var player in gameState['players']) {
-                                player['active'] = true;
-                              }
-                              await supabase.from('game_state').update({
-                                'first_buzz_id': null,
-                                'state_of_game': 1,
-                                'players': [
-                                  {
-                                    'id': firstBuzzId,
-                                    'name': firstBuzzerName,
-                                    'score': firstBuzzerScore + 2,
-                                  },
-                                  ...gameState['players'].where(
-                                      (player) => player['id'] != firstBuzzId)
-                                ]
-                              }).eq('id', roomId);
-                            },
-                            child: const Text('Begge riktig (+2)')),
-                        ElevatedButton(
-                            onPressed: () async {
-                              await supabase.from('game_state').update({
-                                'first_buzz_id': null,
-                                'state_of_game': 1,
-                                'players': [
-                                  {
-                                    'id': firstBuzzId,
-                                    'name': firstBuzzerName,
-                                    'active': false,
-                                    'score': firstBuzzerScore,
-                                  },
-                                  ...gameState['players'].where(
-                                      (player) => player['id'] != firstBuzzId)
-                                ]
-                              }).eq('id', roomId);
-                            },
-                            child: const Text('Feil svar')),
+                        DecisionButton(
+                          text: 'Enten riktig sang eller artist (+1)',
+                          onPressed: () async {
+                            ref.read(continue_.notifier).state = 1;
+                            // Resetting the active property of each player for the next round
+                            for (var player in gameState['players']) {
+                              player['active'] = true;
+                            }
+                            await supabase.from('game_state').update({
+                              'first_buzz_id': null,
+                              'state_of_game': 1,
+                              'players': [
+                                {
+                                  'id': firstBuzzId,
+                                  'name': firstBuzzerName,
+                                  'score': firstBuzzerScore + 1,
+                                },
+                                ...gameState['players'].where(
+                                    (player) => player['id'] != firstBuzzId)
+                              ]
+                            }).eq('id', roomId);
+                          },
+                        ),
+                        DecisionButton(
+                          text: 'Begge riktig (+2)',
+                          onPressed: () async {
+                            ref.read(continue_.notifier).state = 1;
+                            // Resetting the active property of each player for the next round
+                            for (var player in gameState['players']) {
+                              player['active'] = true;
+                            }
+                            await supabase.from('game_state').update({
+                              'first_buzz_id': null,
+                              'state_of_game': 1,
+                              'players': [
+                                {
+                                  'id': firstBuzzId,
+                                  'name': firstBuzzerName,
+                                  'score': firstBuzzerScore + 2,
+                                },
+                                ...gameState['players'].where(
+                                    (player) => player['id'] != firstBuzzId)
+                              ]
+                            }).eq('id', roomId);
+                          },
+                        ),
+                        DecisionButton(
+                          text: 'Feil svar',
+                          onPressed: () async {
+                            await supabase.from('game_state').update({
+                              'first_buzz_id': null,
+                              'state_of_game': 1,
+                              'players': [
+                                {
+                                  'id': firstBuzzId,
+                                  'name': firstBuzzerName,
+                                  'active': false,
+                                  'score': firstBuzzerScore,
+                                },
+                                ...gameState['players'].where(
+                                    (player) => player['id'] != firstBuzzId)
+                              ]
+                            }).eq('id', roomId);
+                          },
+                        )
                       ]);
                 } else {
                   return Column(
@@ -135,5 +137,30 @@ class WaitingForBuzz extends HookConsumerWidget {
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stackTrace) => const Center(child: Text('Error'))));
+  }
+}
+
+class DecisionButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+
+  const DecisionButton(
+      {super.key, required this.onPressed, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      padding: const EdgeInsets.all(25.0),
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            backgroundColor: Colors.deepPurple,
+          ),
+          onPressed: onPressed,
+          child: Text(text)),
+    );
   }
 }
