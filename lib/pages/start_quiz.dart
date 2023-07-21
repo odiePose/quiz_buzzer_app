@@ -18,7 +18,7 @@ class StartQuizPage extends HookConsumerWidget {
     final SupabaseClient supabase = ref.watch(supabaseProvider);
 
     return playersValue.when(
-        data: (data) => data[0]['state_of_game'] == 0
+        data: (data) => data[0]['state_of_game'] == GameState.notStarted
             ? Scaffold(
                 backgroundColor: const Color(0xFFdddef2),
                 appBar: AppBar(
@@ -91,7 +91,7 @@ class StartQuizPage extends HookConsumerWidget {
                             onTap: () async {
                               try {
                                 await supabase.from('game_state').update({
-                                  'state_of_game': 1,
+                                  'state_of_game': GameState.inGame,
                                 }).eq('id', roomId);
                               } catch (e) {
                                 // ignore: avoid_print

@@ -44,7 +44,7 @@ class WaitingForBuzz extends HookConsumerWidget {
                             }
                             await supabase.from('game_state').update({
                               'first_buzz_id': null,
-                              'state_of_game': 1,
+                              'state_of_game': GameState.showingScoreboard,
                               'players': [
                                 {
                                   'id': firstBuzzId,
@@ -67,7 +67,7 @@ class WaitingForBuzz extends HookConsumerWidget {
                             }
                             await supabase.from('game_state').update({
                               'first_buzz_id': null,
-                              'state_of_game': 1,
+                              'state_of_game': GameState.showingScoreboard,
                               'players': [
                                 {
                                   'id': firstBuzzId,
@@ -85,7 +85,7 @@ class WaitingForBuzz extends HookConsumerWidget {
                           onPressed: () async {
                             await supabase.from('game_state').update({
                               'first_buzz_id': null,
-                              'state_of_game': 1,
+                              'state_of_game': GameState.inGame,
                               'players': [
                                 {
                                   'id': firstBuzzId,
@@ -110,6 +110,7 @@ class WaitingForBuzz extends HookConsumerWidget {
                             ref.read(continue_.notifier).state = 0;
                             await supabase.from('game_state').update({
                               'first_buzz_id': null,
+                              'state_of_game': GameState.inGame
                             }).eq('id', roomId);
                           },
                           child: const Text('Fortsett til neste runde')),
