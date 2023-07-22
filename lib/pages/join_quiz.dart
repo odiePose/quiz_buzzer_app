@@ -109,7 +109,8 @@ class PlayerJoinedRoom extends HookConsumerWidget {
       ),
       body: playersValue.when(data: (data) {
         final gameState = data[0];
-        if (gameState['state_of_game'] == GameState.inGame) {
+        print(GameState.inGame.index);
+        if (gameState['state_of_game'] == GameState.inGame.index) {
           return PlayerBuzzView(roomId);
         }
         final players = gameState['players'] as List<dynamic>;
