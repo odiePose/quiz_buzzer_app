@@ -15,10 +15,11 @@ class PlayerBuzzView extends HookConsumerWidget {
     final playersValue = ref.watch(roomStreamProvider(roomId));
     final supabase = ref.watch(supabaseProvider);
     final playerid = ref.watch(playerIdProvider);
+
     return playersValue.when(
       data: (data) {
-        switch (data[0]['game_state']) {
-          case GameState.inGame:
+        switch (data[0]['state_of_game']) {
+          case 3:
             final player = data[0]['players']
                 .firstWhere((player) => player['id'] == playerid);
             if (player['active'] == false) {
@@ -55,7 +56,7 @@ class PlayerBuzzView extends HookConsumerWidget {
               ),
             );
 
-          case GameState.showingScoreboard:
+          case 1:
             return Center(
               child: Column(
                 children: [
@@ -72,7 +73,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                 ],
               ),
             );
-          case GameState.showingBuzzer:
+          case 2:
             return Center(
               child: Text(data[0]['first_buzz_id'] + 'was the first to buzz'),
             );
