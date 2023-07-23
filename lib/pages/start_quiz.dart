@@ -4,7 +4,6 @@ import 'package:beat_blitz/pages/home_page.dart';
 import 'package:beat_blitz/pages/in_game_views/host_waiting_for_buzz.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -89,6 +88,7 @@ class StartQuizPage extends HookConsumerWidget {
                           child: GestureDetector(
                             onTap: () async {
                               try {
+                                print(GameState.inGame.index);
                                 await supabase.from('game_state').update({
                                   'state_of_game': GameState.inGame.index,
                                 }).eq('id', roomId);

@@ -31,9 +31,10 @@ class PlayerBuzzView extends HookConsumerWidget {
             return Center(
               child: GestureDetector(
                 onTap: () async {
-                  await supabase
-                      .from('game_state')
-                      .update({'first_buzz_id': playerid}).eq('id', roomId);
+                  await supabase.from('game_state').update({
+                    'first_buzz_id': playerid,
+                    'state_of_game': GameState.showingBuzzer.index
+                  }).eq('id', roomId);
                 },
                 child: AvatarGlow(
                   endRadius: MediaQuery.of(context).size.width * 0.55,
