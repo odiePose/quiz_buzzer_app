@@ -88,7 +88,6 @@ class StartQuizPage extends HookConsumerWidget {
                           child: GestureDetector(
                             onTap: () async {
                               try {
-                                print(GameState.inGame.index);
                                 await supabase.from('game_state').update({
                                   'state_of_game': GameState.inGame.index,
                                 }).eq('id', roomId);

@@ -3,8 +3,6 @@ import 'package:beat_blitz/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final continue_ = StateProvider((ref) => 0);
-
 class WaitingForBuzz extends HookConsumerWidget {
   const WaitingForBuzz(this.roomId, {super.key});
   final int roomId;
@@ -12,131 +10,132 @@ class WaitingForBuzz extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomValue = ref.watch(roomStreamProvider(roomId));
     final supabase = ref.watch(supabaseProvider);
-    final continueVar = ref.watch(continue_);
     return Scaffold(
         body: roomValue.when(
             data: (data) {
-              final gameState = data[0];
-              final firstBuzzId = gameState['first_buzz_id'];
-              if (firstBuzzId != null) {
-                final firstBuzzUser = gameState['players']
+              final gameData = data[0];
+              final firstBuzzId = gameData['first_buzz_id'];
+              final gameState = gameData['state_of_game'];
+              if (gameState == GameState.showingBuzzer.index) {
+                final firstBuzzUser = gameData['players']
                     .firstWhere((player) => player['id'] == firstBuzzId);
                 final firstBuzzerName = firstBuzzUser['name'];
                 final firstBuzzerScore = firstBuzzUser['score'];
-                if (continueVar == 0) {
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(width: MediaQuery.of(context).size.width),
-                        Text(
-                          firstBuzzerName + ' has buzzed!',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 25),
-                        ),
-                        DecisionButton(
-                          text: 'Enten riktig sang eller artist (+1)',
-                          onPressed: () async {
-                            ref.read(continue_.notifier).state = 1;
-                            // Resetting the active property of each player for the next round
-                            for (var player in gameState['players']) {
-                              player['active'] = true;
-                            }
-                            await supabase.from('game_state').update({
-                              'first_buzz_id': null,
-                              'state_of_game':
-                                  GameState.showingScoreboard.index,
-                              'players': [
-                                {
-                                  'id': firstBuzzId,
-                                  'name': firstBuzzerName,
-                                  'score': firstBuzzerScore + 1,
-                                },
-                                ...gameState['players'].where(
-                                    (player) => player['id'] != firstBuzzId)
-                              ]
-                            }).eq('id', roomId);
-                          },
-                        ),
-                        DecisionButton(
-                          text: 'Begge riktig (+2)',
-                          onPressed: () async {
-                            ref.read(continue_.notifier).state = 1;
-                            // Resetting the active property of each player for the next round
-                            for (var player in gameState['players']) {
-                              player['active'] = true;
-                            }
-                            await supabase.from('game_state').update({
-                              'first_buzz_id': null,
-                              'state_of_game':
-                                  GameState.showingScoreboard.index,
-                              'players': [
-                                {
-                                  'id': firstBuzzId,
-                                  'name': firstBuzzerName,
-                                  'score': firstBuzzerScore + 2,
-                                },
-                                ...gameState['players'].where(
-                                    (player) => player['id'] != firstBuzzId)
-                              ]
-                            }).eq('id', roomId);
-                          },
-                        ),
-                        DecisionButton(
-                          text: 'Feil svar',
-                          onPressed: () async {
-                            await supabase.from('game_state').update({
-                              'first_buzz_id': null,
-                              'state_of_game': GameState.inGame.index,
-                              'players': [
-                                {
-                                  'id': firstBuzzId,
-                                  'name': firstBuzzerName,
-                                  'active': false,
-                                  'score': firstBuzzerScore,
-                                },
-                                ...gameState['players'].where(
-                                    (player) => player['id'] != firstBuzzId)
-                              ]
-                            }).eq('id', roomId);
-                          },
-                        )
-                      ]);
-                } else {
-                  return Column(
+                return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                          onPressed: () async {
-                            ref.read(continue_.notifier).state = 0;
-                            await supabase.from('game_state').update({
-                              'first_buzz_id': null,
-                              'state_of_game': GameState.inGame.index
-                            }).eq('id', roomId);
-                          },
-                          child: const Text('Fortsett til neste runde')),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
-                          },
-                          child: const Text('Avslutt spillet')),
-                    ],
-                  );
-                }
-              }
-              return const Center(
-                child: Column(
+                      SizedBox(width: MediaQuery.of(context).size.width),
+                      Text(
+                        firstBuzzerName + ' has buzzed!',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 25),
+                      ),
+                      DecisionButton(
+                        text: 'Enten riktig sang eller artist (+1)',
+                        onPressed: () async {
+                          // Resetting the active property of each player for the next round
+
+                          for (var player in gameData['players']) {
+                            player['active'] = true;
+                          }
+
+                          await supabase.from('game_state').update({
+                            'first_buzz_id': null,
+                            'state_of_game': GameState.showingScoreboard.index,
+                            'players': [
+                              {
+                                'id': firstBuzzId,
+                                'name': firstBuzzerName,
+                                'score': firstBuzzerScore + 1,
+                              },
+                              ...gameData['players'].where(
+                                  (player) => player['id'] != firstBuzzId)
+                            ]
+                          }).eq('id', roomId);
+                        },
+                      ),
+                      DecisionButton(
+                        text: 'Begge riktig (+2)',
+                        onPressed: () async {
+                          // Resetting the active property of each player for the next round
+                          for (var player in gameData['players']) {
+                            player['active'] = true;
+                          }
+                          await supabase.from('game_state').update({
+                            'first_buzz_id': null,
+                            'state_of_game': GameState.showingScoreboard.index,
+                            'players': [
+                              {
+                                'id': firstBuzzId,
+                                'name': firstBuzzerName,
+                                'score': firstBuzzerScore + 2,
+                              },
+                              ...gameData['players'].where(
+                                  (player) => player['id'] != firstBuzzId)
+                            ]
+                          }).eq('id', roomId);
+                        },
+                      ),
+                      DecisionButton(
+                        text: 'Feil svar',
+                        onPressed: () async {
+                          await supabase.from('game_state').update({
+                            'first_buzz_id': null,
+                            'state_of_game': GameState.inGame.index,
+                            'players': [
+                              {
+                                'id': firstBuzzId,
+                                'name': firstBuzzerName,
+                                'active': false,
+                                'score': firstBuzzerScore,
+                              },
+                              ...gameData['players'].where(
+                                  (player) => player['id'] != firstBuzzId)
+                            ]
+                          }).eq('id', roomId);
+                        },
+                      )
+                    ]);
+              } else if (gameState == GameState.showingScoreboard.index) {
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Waiting for a buzz...',
-                        style: TextStyle(fontSize: 25)),
+                    SizedBox(width: MediaQuery.of(context).size.width),
+                    DecisionButton(
+                        onPressed: () async {
+                          await supabase.from('game_state').update({
+                            'first_buzz_id': null,
+                            'state_of_game': GameState.inGame.index
+                          }).eq('id', roomId);
+                        },
+                        text: ('Fortsett til neste runde')),
+                    DecisionButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        },
+                        text: 'Avslutt spillet'),
                   ],
-                ),
-              );
+                );
+              } else if (gameState == GameState.inGame.index) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Waiting for a buzz...',
+                          style: TextStyle(fontSize: 25)),
+                    ],
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Text('Error'),
+                );
+              }
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stackTrace) => const Center(child: Text('Error'))));

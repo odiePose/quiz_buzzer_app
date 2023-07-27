@@ -81,7 +81,7 @@ class JoinQuiz extends HookConsumerWidget {
                 context,
                 NoAnimationPageRoute(
                   builder: (context) =>
-                      PlayerJoinedRoom(roomId: int.parse(roomId)),
+                      PlayerBuzzView(roomId: int.parse(roomId)),
                 ),
               );
             }
@@ -109,9 +109,8 @@ class PlayerJoinedRoom extends HookConsumerWidget {
       ),
       body: playersValue.when(data: (data) {
         final gameState = data[0];
-        print(GameState.inGame.index);
-        if (gameState['state_of_game'] == GameState.inGame.index) {
-          return PlayerBuzzView(roomId);
+        if (gameState['state_of_game'] != GameState.notStarted.index) {
+          return PlayerBuzzView(roomId: roomId);
         }
         final players = gameState['players'] as List<dynamic>;
         //final host = gameState['host'];
@@ -132,9 +131,11 @@ class PlayerJoinedRoom extends HookConsumerWidget {
                   const Text('Joined players:',
                       textAlign: TextAlign.center,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
                   ...players.map((player) {
-                    return Text(player['name'], textAlign: TextAlign.center);
+                    return Text(player['name'],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20));
                   }).toList()
                 ],
               )),
