@@ -4,7 +4,6 @@ import 'package:beat_blitz/pages/home_page.dart';
 import 'package:beat_blitz/pages/in_game_views/host_waiting_for_buzz.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,9 +15,8 @@ class StartQuizPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playersValue = ref.watch(roomStreamProvider(roomId));
     final SupabaseClient supabase = ref.watch(supabaseProvider);
-
     return playersValue.when(
-        data: (data) => data[0]['state_of_game'] == 0
+        data: (data) => data[0]['state_of_game'] == GameState.notStarted.index
             ? Scaffold(
                 backgroundColor: const Color(0xFFdddef2),
                 appBar: AppBar(
@@ -91,7 +89,7 @@ class StartQuizPage extends HookConsumerWidget {
                             onTap: () async {
                               try {
                                 await supabase.from('game_state').update({
-                                  'state_of_game': 1,
+                                  'state_of_game': GameState.inGame.index,
                                 }).eq('id', roomId);
                               } catch (e) {
                                 // ignore: avoid_print

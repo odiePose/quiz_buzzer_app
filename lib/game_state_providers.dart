@@ -9,3 +9,10 @@ final roomStreamProvider = StreamProvider.family((ref, roomId) {
       .from('game_state')
       .stream(primaryKey: ['id']).eq('id', roomId);
 });
+
+enum GameState {
+  notStarted,
+  showingScoreboard,
+  showingBuzzer,
+  inGame,
+}

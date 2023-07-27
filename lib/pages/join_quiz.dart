@@ -69,8 +69,7 @@ class JoinQuiz extends HookConsumerWidget {
                   'id': data![0]['players'].length + 1,
                   'name': name,
                   'active': true,
-                  'score': 0,
-                  'is_host': false,
+                  'score': 0
                 }
               ]
             }).eq('id', int.parse(roomId));
@@ -82,7 +81,7 @@ class JoinQuiz extends HookConsumerWidget {
                 context,
                 NoAnimationPageRoute(
                   builder: (context) =>
-                      PlayerJoinedRoom(roomId: int.parse(roomId)),
+                      PlayerBuzzView(roomId: int.parse(roomId)),
                 ),
               );
             }
@@ -110,18 +109,36 @@ class PlayerJoinedRoom extends HookConsumerWidget {
       ),
       body: playersValue.when(data: (data) {
         final gameState = data[0];
-        if (gameState['state_of_game'] == 1) {
-          return PlayerBuzzView(roomId);
+        if (gameState['state_of_game'] != GameState.notStarted.index) {
+          return PlayerBuzzView(roomId: roomId);
         }
         final players = gameState['players'] as List<dynamic>;
-        final host = gameState['host'];
+        //final host = gameState['host'];
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text('Waiting for host to start'),
-              Text('Host: $host'),
-              Text('Players: ${players.length}'),
+              const SizedBox(height: 100),
+              const Text(
+                'Waiting for host to start...',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 50),
+              //Text('Host: $host'),
+              Expanded(
+                  child: ListView(
+                children: [
+                  const Text('Joined players:',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
+                  ...players.map((player) {
+                    return Text(player['name'],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20));
+                  }).toList()
+                ],
+              )),
             ],
           ),
         );

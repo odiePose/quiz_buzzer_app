@@ -30,8 +30,9 @@ class HomePage extends HookConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
+                Container(
                   height: 130,
+                  constraints: const BoxConstraints(maxWidth: 500),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,6 +99,7 @@ class HomePage extends HookConsumerWidget {
                       children: [
                         Container(
                           height: 140,
+                          constraints: const BoxConstraints(maxWidth: 500),
                           decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
@@ -149,6 +151,7 @@ class HomePage extends HookConsumerWidget {
                       alignment: AlignmentDirectional.bottomStart,
                       children: [
                         Container(
+                          constraints: const BoxConstraints(maxWidth: 500),
                           height: 140,
                           decoration: BoxDecoration(
                               boxShadow: [
