@@ -35,7 +35,6 @@ class WaitingForBuzz extends HookConsumerWidget {
                         text: 'Enten riktig sang eller artist (+1)',
                         onPressed: () async {
                           // Resetting the active property of each player for the next round
-
                           for (var player in gameData['players']) {
                             player['active'] = true;
                           }

@@ -50,7 +50,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                       ], color: Colors.green.shade800, shape: BoxShape.circle),
                       child: Center(
                           child: Text(
-                        'BUZZ \n FOR FAEN!!!',
+                        'BUZZ!!',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                             color: Colors.white, fontSize: 30),
@@ -67,6 +67,12 @@ class PlayerBuzzView extends HookConsumerWidget {
                       'Waiting for host to continue',
                       style: GoogleFonts.poppins(
                           fontSize: 35, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 50),
+                    const Text(
+                      'Scoreboard:',
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                     ),
                     for (var player in data[0]['players'])
                       Text(
@@ -86,7 +92,8 @@ class PlayerBuzzView extends HookConsumerWidget {
                             Text(
                               'Waiting for host to give points',
                               style: GoogleFonts.poppins(
-                                  fontSize: 25, fontWeight: FontWeight.w600),
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
                             const Text(
@@ -95,6 +102,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                                   fontSize: 25,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.green),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
                           ]
@@ -102,22 +110,28 @@ class PlayerBuzzView extends HookConsumerWidget {
                             Text(
                               'Waiting for host to give points...',
                               style: GoogleFonts.poppins(
-                                  fontSize: 25, fontWeight: FontWeight.w600),
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
-                            const Text('Too late!',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.w600)),
+                            const Text(
+                              'Too late!',
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
+                            ),
                             Text(
                               nameOfPlayer(
                                   data[0]['first_buzz_id'], data[0]['players']),
                               style: const TextStyle(fontSize: 25),
+                              textAlign: TextAlign.center,
                             ),
                             const Text(
                               'was the first to buzz!',
                               style: TextStyle(fontSize: 20),
+                              textAlign: TextAlign.center,
                             ),
                           ]),
               );
@@ -165,4 +179,10 @@ class PlayerBuzzView extends HookConsumerWidget {
 
 String nameOfPlayer(int id, List<dynamic> players) {
   return players.firstWhere((player) => player['id'] == id)['name'];
+}
+
+List<dynamic> namesOfPlayersOrderedByScore(List<dynamic> players) {
+  final playersSortedByScore = players
+    ..sort((a, b) => b['score'].compareTo(a['score']));
+  return playersSortedByScore.map((player) => player['name']).toList();
 }
