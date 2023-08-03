@@ -60,28 +60,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                 ),
               );
             } else if (gameState == GameState.showingScoreboard.index) {
-              return Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Waiting for host to continue',
-                      style: GoogleFonts.poppins(
-                          fontSize: 35, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 50),
-                    const Text(
-                      'Scoreboard:',
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-                    ),
-                    for (var player in data[0]['players'])
-                      Text(
-                        player['name'] + ': ' + player['score'].toString(),
-                        style: GoogleFonts.poppins(fontSize: 30),
-                      ),
-                  ],
-                ),
-              );
+              return ScoreboardScreen(data[0], context);
             } else if (gameState == GameState.showingBuzzer.index) {
               return Center(
                 child: Column(
@@ -175,6 +154,38 @@ class PlayerBuzzView extends HookConsumerWidget {
           error: (error, stackTrace) => const Center(child: Text('Error')),
         ));
   }
+
+  Center ScoreboardScreen(Map<String, dynamic> data, BuildContext context) {
+    final players = data['players'] as List<dynamic>;
+    final playerNames = namesOfPlayersOrderedByScore(players);
+
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            'Waiting for host to continue',
+            style:
+                GoogleFonts.poppins(fontSize: 35, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 70),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              buildPodiumContainer(Colors.grey, 2, context),
+              buildPodiumContainer(Colors.yellow, 1, context),
+              buildPodiumContainer(Colors.brown, 3, context)
+            ],
+          ),
+          for (var i = 3; i < playerNames.length; i++)
+            Text(
+              '${i + 1}. ${playerNames[i]}',
+              style: GoogleFonts.poppins(fontSize: 30),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 String nameOfPlayer(int id, List<dynamic> players) {
@@ -185,4 +196,32 @@ List<dynamic> namesOfPlayersOrderedByScore(List<dynamic> players) {
   final playersSortedByScore = players
     ..sort((a, b) => b['score'].compareTo(a['score']));
   return playersSortedByScore.map((player) => player['name']).toList();
+}
+
+Widget buildPodiumContainer(Color color, int position, BuildContext context) {
+  final double containerHeight = MediaQuery.of(context).size.height * 0.3;
+  final double containerWidth = MediaQuery.of(context).size.width * 0.2;
+
+  return Container(
+    height: position == 1
+        ? containerHeight
+        : position == 2
+            ? containerHeight * 0.8
+            : containerHeight * 0.6,
+    width: containerWidth,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Center(
+      child: Text(
+        'Player $position', // Replace with actual player names
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  );
 }
