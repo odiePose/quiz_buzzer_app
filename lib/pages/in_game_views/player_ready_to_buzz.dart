@@ -60,7 +60,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                 ),
               );
             } else if (gameState == GameState.showingScoreboard.index) {
-              return ScoreboardScreen(data[0], context);
+              return scoreboardScreen(data[0], context);
             } else if (gameState == GameState.showingBuzzer.index) {
               return Center(
                 child: Column(
@@ -155,7 +155,7 @@ class PlayerBuzzView extends HookConsumerWidget {
         ));
   }
 
-  Center ScoreboardScreen(Map<String, dynamic> data, BuildContext context) {
+  Center scoreboardScreen(Map<String, dynamic> data, BuildContext context) {
     final players = data['players'] as List<dynamic>;
     final playerNames = namesOfPlayersOrderedByScore(players);
 
