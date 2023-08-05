@@ -172,9 +172,12 @@ class PlayerBuzzView extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              buildPodiumContainer(Colors.grey, 2, context),
-              buildPodiumContainer(Colors.yellow, 1, context),
-              buildPodiumContainer(Colors.brown, 3, context)
+              buildPodiumContainer(
+                  Colors.grey, 2, context, playerNames[1] ?? ''),
+              buildPodiumContainer(
+                  Colors.yellow, 1, context, playerNames[0] ?? ''),
+              buildPodiumContainer(
+                  Colors.brown, 3, context, playerNames[2] ?? '')
             ],
           ),
           for (var i = 3; i < playerNames.length; i++)
@@ -198,30 +201,42 @@ List<dynamic> namesOfPlayersOrderedByScore(List<dynamic> players) {
   return playersSortedByScore.map((player) => player['name']).toList();
 }
 
-Widget buildPodiumContainer(Color color, int position, BuildContext context) {
+Widget buildPodiumContainer(
+    Color color, int position, BuildContext context, String playername) {
   final double containerHeight = MediaQuery.of(context).size.height * 0.3;
   final double containerWidth = MediaQuery.of(context).size.width * 0.2;
 
-  return Container(
-    height: position == 1
-        ? containerHeight
-        : position == 2
-            ? containerHeight * 0.8
-            : containerHeight * 0.6,
-    width: containerWidth,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Center(
-      child: Text(
-        'Player $position', // Replace with actual player names
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      Text(
+        playername,
+        style: GoogleFonts.poppins(
+            fontSize: 30, fontWeight: FontWeight.w600, color: color),
+      ),
+      const SizedBox(height: 20),
+      Container(
+        height: position == 1
+            ? containerHeight
+            : position == 2
+                ? containerHeight * 0.8
+                : containerHeight * 0.6,
+        width: containerWidth,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            'Player $position', // Replace with actual player names
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
-    ),
+    ],
   );
 }
