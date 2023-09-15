@@ -50,7 +50,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                       ], color: Colors.green.shade800, shape: BoxShape.circle),
                       child: Center(
                           child: Text(
-                        'BUZZ \n FOR FAEN!!!',
+                        'BUZZ!!',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                             color: Colors.white, fontSize: 30),
@@ -60,22 +60,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                 ),
               );
             } else if (gameState == GameState.showingScoreboard.index) {
-              return Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Waiting for host to continue',
-                      style: GoogleFonts.poppins(
-                          fontSize: 35, fontWeight: FontWeight.w600),
-                    ),
-                    for (var player in data[0]['players'])
-                      Text(
-                        player['name'] + ': ' + player['score'].toString(),
-                        style: GoogleFonts.poppins(fontSize: 30),
-                      ),
-                  ],
-                ),
-              );
+              return scoreboardScreen(data[0], context);
             } else if (gameState == GameState.showingBuzzer.index) {
               return Center(
                 child: Column(
@@ -86,7 +71,8 @@ class PlayerBuzzView extends HookConsumerWidget {
                             Text(
                               'Waiting for host to give points',
                               style: GoogleFonts.poppins(
-                                  fontSize: 25, fontWeight: FontWeight.w600),
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
                             const Text(
@@ -95,6 +81,7 @@ class PlayerBuzzView extends HookConsumerWidget {
                                   fontSize: 25,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.green),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
                           ]
@@ -102,22 +89,28 @@ class PlayerBuzzView extends HookConsumerWidget {
                             Text(
                               'Waiting for host to give points...',
                               style: GoogleFonts.poppins(
-                                  fontSize: 25, fontWeight: FontWeight.w600),
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 50),
-                            const Text('Too late!',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.w600)),
+                            const Text(
+                              'Too late!',
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
+                            ),
                             Text(
                               nameOfPlayer(
                                   data[0]['first_buzz_id'], data[0]['players']),
                               style: const TextStyle(fontSize: 25),
+                              textAlign: TextAlign.center,
                             ),
                             const Text(
                               'was the first to buzz!',
                               style: TextStyle(fontSize: 20),
+                              textAlign: TextAlign.center,
                             ),
                           ]),
               );
@@ -161,8 +154,89 @@ class PlayerBuzzView extends HookConsumerWidget {
           error: (error, stackTrace) => const Center(child: Text('Error')),
         ));
   }
+
+  Center scoreboardScreen(Map<String, dynamic> data, BuildContext context) {
+    final players = data['players'] as List<dynamic>;
+    final playerNames = namesOfPlayersOrderedByScore(players);
+
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            'Waiting for host to continue',
+            style:
+                GoogleFonts.poppins(fontSize: 35, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 70),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              buildPodiumContainer(
+                  Colors.grey, 2, context, playerNames[1] ?? ''),
+              buildPodiumContainer(
+                  Colors.yellow, 1, context, playerNames[0] ?? ''),
+              buildPodiumContainer(
+                  Colors.brown, 3, context, playerNames[2] ?? '')
+            ],
+          ),
+          for (var i = 3; i < playerNames.length; i++)
+            Text(
+              '${i + 1}. ${playerNames[i]}',
+              style: GoogleFonts.poppins(fontSize: 30),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 String nameOfPlayer(int id, List<dynamic> players) {
   return players.firstWhere((player) => player['id'] == id)['name'];
+}
+
+List<dynamic> namesOfPlayersOrderedByScore(List<dynamic> players) {
+  final playersSortedByScore = players
+    ..sort((a, b) => b['score'].compareTo(a['score']));
+  return playersSortedByScore.map((player) => player['name']).toList();
+}
+
+Widget buildPodiumContainer(
+    Color color, int position, BuildContext context, String playername) {
+  final double containerHeight = MediaQuery.of(context).size.height * 0.3;
+  final double containerWidth = MediaQuery.of(context).size.width * 0.2;
+
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      Text(
+        playername,
+        style: GoogleFonts.poppins(
+            fontSize: 30, fontWeight: FontWeight.w600, color: color),
+      ),
+      const SizedBox(height: 20),
+      Container(
+        height: position == 1
+            ? containerHeight
+            : position == 2
+                ? containerHeight * 0.8
+                : containerHeight * 0.6,
+        width: containerWidth,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            'Player $position', // Replace with actual player names
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }
